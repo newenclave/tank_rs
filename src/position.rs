@@ -18,11 +18,11 @@ impl Point {
     }    
 }
 
-pub trait ToPoint {
+pub trait AsPoint {
     fn as_point(&self) -> Point;
 }
 
-impl ToPoint for (IndexType, IndexType) {
+impl AsPoint for (IndexType, IndexType) {
     fn as_point(&self) -> Point {
         Point::new(self.0, self.1)
     }

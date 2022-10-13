@@ -1,5 +1,5 @@
 use std::{collections::HashSet, cmp::{max, min}};
-use crate::position::{Point, IndexType, ToPoint};
+use crate::position::{Point, IndexType, AsPoint};
 
 type Rect = (Point, Point);
 type PointSet = HashSet<Point>;

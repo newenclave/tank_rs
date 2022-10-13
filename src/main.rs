@@ -1,6 +1,6 @@
 use std::{thread, time::Duration};
 
-use tank::{terminal, render, braille_canvas::BrailleCanvas, canvas::Canvas, sprite::Sprite, drawable::Drawable, position::ToPoint};
+use tank::{terminal, render, braille_canvas::BrailleCanvas, canvas::Canvas, sprite::Sprite, drawable::Drawable, position::AsPoint};
 
 fn main() {
     let mut stdout = terminal::init().unwrap();

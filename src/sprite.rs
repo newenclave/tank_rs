@@ -1,5 +1,5 @@
 use std::{collections::HashSet, cmp::max};
-use crate::{position::{Point, IndexType, ToPoint}, canvas::Canvas, drawable::Drawable};
+use crate::{position::{Point, IndexType, AsPoint}, canvas::Canvas, drawable::Drawable};
 
 pub struct Sprite {
     values: HashSet<Point>,

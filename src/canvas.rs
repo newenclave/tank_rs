@@ -1,6 +1,6 @@
 use std::cmp::{min, max};
 
-use crate::position::{IndexType, Point, ToPoint};
+use crate::position::{IndexType, Point, AsPoint};
 
 pub trait Canvas {
     fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool;
