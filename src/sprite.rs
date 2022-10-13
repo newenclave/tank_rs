@@ -1,5 +1,5 @@
 use std::{collections::HashSet, cmp::max};
-use crate::{position::{Point, IndexType, ToPoint}, canvas::Canvas};
+use crate::{position::{Point, IndexType, ToPoint}, canvas::Canvas, drawable::Drawable};
 
 pub struct Sprite {
     values: HashSet<Point>,
@@ -20,5 +20,13 @@ impl Canvas for Sprite {
         self.values.insert((x, y).as_point());
         self.max = (max(x, self.max.x), max(y, self.max.y)).as_point();
         true
+    }
+}
+
+impl Drawable for Sprite {
+    fn draw(&self, canvas: &mut dyn Canvas) {
+        for p in self.values.iter() {
+            canvas.draw_dot(p.x, p.y);
+        }
     }
 }

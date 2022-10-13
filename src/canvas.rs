@@ -2,12 +2,6 @@ use std::cmp::{min, max};
 
 use crate::position::{IndexType, Point, ToPoint};
 
-fn distance_to(lhs: &Point, rhs: &Point) -> f32 {
-    let delta_x = lhs.x as f32 - rhs.x as f32;
-    let delta_y = lhs.y as f32 - rhs.y as f32;
-   (delta_x * delta_x + delta_y * delta_y).sqrt()
-}
-
 pub trait Canvas {
     fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool;
 
@@ -48,21 +42,21 @@ pub trait Canvas {
     }
 
     fn draw_circle(&mut self, center: Point, radius: IndexType) {
-        if center.x >= radius && center.y >= radius && radius > 0 {
-            for x in 0..=radius {
-                for y in 0..=radius {
-                    let xi = center.x - radius + x;
-                    let yi = center.y - radius + y;
-                    let distance = distance_to(&center, &(xi, yi).as_point());
-                    let delta = (distance - radius as f32).abs();
-                    if  delta < 0.4 {
-                        self.draw_dot(xi, yi);
-                        self.draw_dot(center.x + radius - x, yi);
-                        self.draw_dot(xi, center.y + radius - y);
-                        self.draw_dot(center.x + radius - x, center.y + radius - y);
-                    } else if distance < radius as f32 {
-                        break;
-                    }
+        // 
+        //if center.x >= radius && center.y >= radius && radius > 0 {
+        for x in 0..=radius {
+            for y in 0..=radius {
+                let xi = center.x - radius + x;
+                let yi = center.y - radius + y;
+                let distance = center.distance_as_f32(&(xi, yi).as_point());
+                let delta = (distance - radius as f32).abs();
+                if  delta < 0.4 {
+                    self.draw_dot(xi, yi);
+                    self.draw_dot(center.x + radius - x, yi);
+                    self.draw_dot(xi, center.y + radius - y);
+                    self.draw_dot(center.x + radius - x, center.y + radius - y);
+                } else if distance < radius as f32 {
+                    break;
                 }
             }
         }

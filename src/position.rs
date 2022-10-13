@@ -11,6 +11,11 @@ impl Point {
     pub fn new(x: IndexType, y: IndexType) -> Self {
         Self { x, y }
     }
+    pub fn distance_as_f32(&self, other: &Point) -> f32 {
+        let delta_x = self.x as f32 - other.x as f32;
+        let delta_y = self.y as f32 - other.y as f32;
+        (delta_x * delta_x + delta_y * delta_y).sqrt()        
+    }    
 }
 
 pub trait ToPoint {
