@@ -75,7 +75,7 @@ fn main() {
         obstacles.draw(&mut canvas);
 
         render_tx.send(canvas).unwrap();
-        thread::sleep(Duration::from_millis(10));
+        thread::sleep(Duration::from_millis(2));
     }
 
     drop(render_tx);

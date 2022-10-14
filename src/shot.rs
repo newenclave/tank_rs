@@ -9,16 +9,19 @@ use crate::{
     timer::Timer, game_object::GameObject,
 };
 
-const BULLET_SPRITE: &'static str = r#"x
+const BULLET_SPRITE: &'static str = r#"
+  +x
   |X
   |x
 "#;
 
-const BULLET_EXPLODE_01: &'static str = r#"XX
+const BULLET_EXPLODE_01: &'static str = r#"
+  +XX
   |XX
 "#;
 
-const BULLET_EXPLODE_02: &'static str = r#" X 
+const BULLET_EXPLODE_02: &'static str = r#" 
+  + X 
   |X X
   | X
 "#;
@@ -50,7 +53,7 @@ const BULLET_EXPLODE_06: &'static str = r#"
   +    X 
   |  X   X
   | X  X  X
-  |X   X   X
+  |X X X X X
   | X  X  X
   |  X   X
   |    X

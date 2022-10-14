@@ -5,7 +5,7 @@ use crate::{
     drawable::Drawable,
     position::{AsPoint, IndexType, Point},
     shot::Shot,
-    sprite::Sprite, game_object::GameObject, obstacle::Obstacles, canvas::Canvas,
+    sprite::Sprite, game_object::GameObject, obstacle::Obstacles, canvas::Canvas, timer::Timer,
 };
 
 pub struct Tank {
@@ -14,6 +14,7 @@ pub struct Tank {
     direction: u8,
     pos: Point,
     shots: Vec<Shot>,
+    recharge_delay: Timer,
 }
 
 const TANK_SPRITE_01: &'static str = r#"
@@ -64,6 +65,7 @@ impl Tank {
             direction: 0,
             pos: (x, y).as_point(),
             shots: Vec::new(),
+            recharge_delay: Timer::new(Duration::from_millis(250)),
         }
     }
 
@@ -75,6 +77,7 @@ impl Tank {
         self.shots.retain(|s| s.get_pos().x >= 0 && s.get_pos().x <= 120
                                   && s.get_pos().y >= 0 && s.get_pos().y <= 80
                                   && !s.is_done());
+        self.recharge_delay.update(delta);
     }
 
     pub fn rotate_90(&mut self) {
@@ -144,9 +147,11 @@ impl Tank {
     }
 
     pub fn shoot(&mut self) {
-        let center = self.get_center();
-        self.shots
-            .push(Shot::new(center.x, center.y, self.direction));
+        if self.recharge_delay.ready() {
+            let center = self.get_center();
+            self.shots.push(Shot::new(center.x, center.y, self.direction));
+            self.recharge_delay.reset()
+        }
     }
 
     pub fn explode(&mut self) {
