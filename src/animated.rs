@@ -1,12 +1,12 @@
-use std::{time::Duration, cmp::max};
-use crate::{sprite::Sprite, timer::Timer, position::Point, position::IndexType};
+use crate::{canvas::Canvas, position::IndexType, position::Point, sprite::Sprite, timer::Timer};
+use std::{cmp::max, time::Duration, collections::HashSet};
 
 pub struct Animated {
     sprites: Vec<Sprite>,
     max_pos: Point,
     id: usize,
     delay: Timer,
-    looped: bool
+    looped: bool,
 }
 
 impl Animated {
@@ -15,8 +15,18 @@ impl Animated {
             sprites: Vec::new(),
             max_pos: Point::new(0, 0),
             id: 0,
-            delay: Timer::new(switch_delay), 
-            looped: false
+            delay: Timer::new(switch_delay),
+            looped: false,
+        }
+    }
+
+    pub fn new_static() -> Self {
+        Self {
+            sprites: Vec::new(),
+            max_pos: Point::new(0, 0),
+            id: 0,
+            delay: Timer::new(Duration::MAX),
+            looped: false,
         }
     }
 
@@ -25,8 +35,8 @@ impl Animated {
             sprites: Vec::new(),
             max_pos: Point::new(0, 0),
             id: 0,
-            delay: Timer::new(switch_delay), 
-            looped: true
+            delay: Timer::new(switch_delay),
+            looped: true,
         }
     }
 
@@ -43,17 +53,31 @@ impl Animated {
         if self.delay.update(delta) {
             if !self.done() {
                 self.id = (self.id + 1) % self.sprites.len();
-                self.delay.reset();    
+                self.delay.reset();
             }
         }
     }
 
-    fn end(&self) -> bool {
-        self.sprites.is_empty() || self.id == (self.sprites.len() - 1) 
+    pub fn force_update(&mut self) {
+        if !self.sprites.is_empty() {
+            self.id = (self.id + 1) % self.sprites.len();
+            self.delay.reset();
+        }
     }
- 
+
+    fn end(&self) -> bool {
+        self.sprites.is_empty() || self.id == (self.sprites.len() - 1)
+    }
+
     pub fn done(&self) -> bool {
         !self.looped && self.end() && self.delay.ready()
+    }
+
+    pub fn reset(&mut self) {
+        if self.done() {
+            self.delay.reset();
+            self.id = 0;
+        }
     }
 
     pub fn get_current_sprite(&self) -> Option<&Sprite> {
@@ -78,7 +102,35 @@ impl Animated {
         } else {
             self.sprites[self.id].get_height()
         }
-    }    
+    }
+
+    pub fn rotate_90(&mut self) {
+        for sprite in self.sprites.iter_mut() {
+            sprite.rotate_90();
+        }
+    }
+
+    pub fn draw_to_canvas(&self, canvas: &mut dyn Canvas, x: IndexType, y: IndexType) {
+        if let Some(sprite) = self.get_current_sprite() {
+            sprite.draw_to_canvas(canvas, x, y);
+        }
+    }
+
+    pub fn get_point_set(&self) -> Option<&HashSet<Point>> {
+        if let Some(sprite) = self.get_current_sprite() {
+            sprite.get_point_set()
+        } else {
+            None
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        for s in self.sprites.iter() {
+            if !s.is_empty() {
+                return false;
+            }
+        }
+        true
+    }
 
 }
-

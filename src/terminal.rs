@@ -1,9 +1,12 @@
-use std::{io::{self, Stdout}, error::Error};
+use std::{
+    error::Error,
+    io::{self, Stdout},
+};
 
 use crossterm::{
-    terminal::{self, LeaveAlternateScreen, EnterAlternateScreen}, 
-    cursor::{Hide, Show}, 
-    ExecutableCommand
+    cursor::{Hide, Show},
+    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
+    ExecutableCommand,
 };
 
 pub fn init() -> Result<Stdout, Box<dyn Error>> {

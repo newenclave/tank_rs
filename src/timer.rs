@@ -3,11 +3,10 @@ use std::time::Duration;
 pub struct Timer {
     duration: Duration,
     time_left: Duration,
-    ready: bool
+    ready: bool,
 }
 
 impl Timer {
-
     pub fn new(dur: Duration) -> Self {
         Self {
             duration: dur,
@@ -44,6 +43,5 @@ impl Timer {
 
     pub fn ready(&self) -> bool {
         self.ready
-    } 
-
+    }
 }

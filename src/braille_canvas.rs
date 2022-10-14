@@ -7,7 +7,7 @@ pub struct BrailleCanvas {
 impl BrailleCanvas {
     pub fn new(x: usize, y: usize) -> Self {
         let x_fix = x / 2 + x % 2;
-        let y_fix = y / 4 + if y % 4 == 0 {0} else {1};
+        let y_fix = y / 4 + if y % 4 == 0 { 0 } else { 1 };
         let e_val = braille::empty();
         let mut canvas = Vec::with_capacity(x_fix);
         for _ in 0..x_fix {
@@ -29,9 +29,8 @@ impl BrailleCanvas {
     pub fn area(&self) -> &Vec<Vec<u8>> {
         &self.area
     }
-    
 }
- 
+
 impl Canvas for BrailleCanvas {
     fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool {
         if x >= 0 && y >= 0 {
@@ -40,7 +39,7 @@ impl Canvas for BrailleCanvas {
                 let value = self.area[fix_x][fix_y];
                 self.area[fix_x][fix_y] = braille::set_dot(value, pos_x, pos_y);
                 return true;
-            } 
+            }
         }
         false
     }

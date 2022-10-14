@@ -1,20 +1,18 @@
-use std::io::{Stdout, Write};
+use crate::{braille, braille_canvas::BrailleCanvas};
 use crossterm::{
-    QueueableCommand, 
-    style::{
-        SetBackgroundColor, Color
-    }, 
-    terminal:: {
-        Clear,
-        ClearType
-    },
-    cursor::{
-        MoveTo,
-    }
+    cursor::MoveTo,
+    style::{Color, SetBackgroundColor},
+    terminal::{Clear, ClearType},
+    QueueableCommand,
 };
-use crate::{braille_canvas::BrailleCanvas, braille};
+use std::io::{Stdout, Write};
 
-pub fn render(stdout: &mut Stdout, last_frame: &BrailleCanvas, current_frame: &BrailleCanvas, force: bool) {
+pub fn render(
+    stdout: &mut Stdout,
+    last_frame: &BrailleCanvas,
+    current_frame: &BrailleCanvas,
+    force: bool,
+) {
     if force {
         stdout.queue(SetBackgroundColor(Color::Blue)).unwrap();
         stdout.queue(Clear(ClearType::All)).unwrap();
@@ -29,4 +27,4 @@ pub fn render(stdout: &mut Stdout, last_frame: &BrailleCanvas, current_frame: &B
         }
     }
     stdout.flush().unwrap();
-} 
+}

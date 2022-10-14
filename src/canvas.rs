@@ -1,6 +1,6 @@
-use std::cmp::{min, max};
+use std::cmp::{max, min};
 
-use crate::position::{IndexType, Point, AsPoint};
+use crate::position::{AsPoint, IndexType, Point};
 
 pub trait Canvas {
     fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool;
@@ -16,33 +16,34 @@ pub trait Canvas {
                     for ix in from.x..=to.x {
                         self.draw_dot(ix, y.floor() as IndexType);
                         y = y + dly;
-                    }    
+                    }
                 } else {
                     for ix in (from.x..=to.x).rev() {
                         self.draw_dot(ix, y.floor() as IndexType);
                         y = y - dly;
                     }
                 }
-            } else { // dy >= dx
+            } else {
+                // dy >= dx
                 let mut x: f32 = from.x as f32 + 0.5;
                 let dlx = dx as f32 / dy as f32;
                 if dy > 0 {
                     for iy in from.y..=to.y {
                         self.draw_dot(x.floor() as IndexType, iy);
                         x = x + dlx;
-                    }    
+                    }
                 } else {
                     for iy in (from.y..=to.y).rev() {
                         self.draw_dot(x.floor() as IndexType, iy);
                         x = x - dlx;
-                    }    
+                    }
                 }
             }
         }
     }
 
     fn draw_circle(&mut self, center: Point, radius: IndexType) {
-        // 
+        //
         //if center.x >= radius && center.y >= radius && radius > 0 {
         for x in 0..=radius {
             for y in 0..=radius {
@@ -50,7 +51,7 @@ pub trait Canvas {
                 let yi = center.y - radius + y;
                 let distance = center.distance_as_f32(&(xi, yi).as_point());
                 let delta = (distance - radius as f32).abs();
-                if  delta < 0.4 {
+                if delta < 0.4 {
                     self.draw_dot(xi, yi);
                     self.draw_dot(center.x + radius - x, yi);
                     self.draw_dot(xi, center.y + radius - y);
@@ -75,4 +76,51 @@ pub trait Canvas {
         }
     }
 
+    /*
+        ' ' - increments X
+        '\r' - ignored
+        '\n' - increments y, resets x
+        '|' - resets X
+        '+' - resets X AND y
+        '-' - ends the sprite
+        any - plots dot, incremets x
+        example:
+        +  *
+        | * *
+        |*****
+    */
+    fn draw_from_string<'a>(&mut self, value: &'a str) -> &'a str {
+        let mut x: IndexType = 0;
+        let mut y: IndexType = 0;
+        let mut id = 0;
+        for (i, c) in value.chars().enumerate() {
+            match c {
+                ' ' => {
+                    x += 1;
+                }
+                '+' => {
+                    y = 0;
+                    x = 0;
+                }
+                '\r' => {}
+                '\n' => {
+                    x = 0;
+                    y += 1;
+                }
+                '|' => {
+                    x = 0;
+                }
+                '-' => {
+                    id = i;
+                    break;
+                }
+                _ => {
+                    self.draw_dot(x, y);
+                    x += 1;
+                }
+            }
+            id = i;
+        }
+        &value[id + 1..value.len()]
+    }
 }
