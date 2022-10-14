@@ -46,19 +46,30 @@ const BULLET_EXPLODE_05: &'static str = r#"
   |   X
 "#;
 
-const BULLET_EXPLODE_06: &'static str = r#"  
+const BULLET_EXPLODE_06: &'static str = r#"   
+  +    X 
+  |  X   X
+  | X  X  X
+  |X   X   X
+  | X  X  X
+  |  X   X
+  |    X
+"#;
+
+const BULLET_EXPLODE_07: &'static str = r#"  
    + X X
    |X X X
    | X X
 "#;
 
-const BILLET_ANIMATED: [&'static str; 6] = [
+const BILLET_ANIMATED: [&'static str; 7] = [
     BULLET_EXPLODE_01,
     BULLET_EXPLODE_02,
     BULLET_EXPLODE_03,
     BULLET_EXPLODE_04,
     BULLET_EXPLODE_05,
     BULLET_EXPLODE_06,
+    BULLET_EXPLODE_07,
 ];
 
 pub struct Shot {

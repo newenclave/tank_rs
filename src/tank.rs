@@ -88,7 +88,7 @@ impl Tank {
         while self.direction != 3 {
             self.rotate_90();
         }
-        self.pos.x -= 1;
+        self.pos.x -= 2;
         self.sprite.force_update();
     }
 
@@ -96,15 +96,16 @@ impl Tank {
         while self.direction != 1 {
             self.rotate_90();
         }
-        self.pos.x += 1;
-        self.sprite.force_update();
+        
+        self.pos.x += 2;
+        self.sprite.force_update();    
     }
 
     pub fn go_up(&mut self) {
         while self.direction != 0 {
             self.rotate_90();
         }
-        self.pos.y -= 1;
+        self.pos.y -= 2;
         self.sprite.force_update();
     }
 
@@ -112,7 +113,8 @@ impl Tank {
         while self.direction != 2 {
             self.rotate_90();
         }
-        self.pos.y += 1;
+
+        self.pos.y += 2;
         self.sprite.force_update();
     }
 
@@ -167,11 +169,7 @@ impl Tank {
         for o in obstacles.get_all_mut().iter_mut() {
             let tank_overlap = self.get_overlap(o);
             if !tank_overlap.is_empty() {
-                if tank_overlap[0].0.x < self.get_height() / 2 {
-                    self.go_back();
-                } else {
-                    self.go_forward();
-                }
+                self.go_back();
             }
             for b in self.shots.iter_mut() {
                 let bullet_overlap = b.get_overlap(o);
