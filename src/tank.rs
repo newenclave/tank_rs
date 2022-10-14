@@ -5,11 +5,12 @@ use crate::{
     drawable::Drawable,
     position::{AsPoint, IndexType, Point},
     shot::Shot,
-    sprite::Sprite, game_object::GameObject, obstacle::Obstacles,
+    sprite::Sprite, game_object::GameObject, obstacle::Obstacles, canvas::Canvas,
 };
 
 pub struct Tank {
     sprite: Animated,
+    area: Sprite,
     direction: u8,
     pos: Point,
     shots: Vec<Shot>,
@@ -55,8 +56,11 @@ impl Tank {
         tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_01));
         tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_02));
         tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_03));
+        let mut a = Sprite::new();
+        a.draw_rectangle((0, 0).as_point(), (tank_animated.get_current_width() - 1, tank_animated.get_current_height() - 1).as_point());
         Self {
             sprite: tank_animated,
+            area: a,
             direction: 0,
             pos: (x, y).as_point(),
             shots: Vec::new(),
@@ -75,6 +79,7 @@ impl Tank {
 
     pub fn rotate_90(&mut self) {
         self.sprite.rotate_90();
+        self.area.rotate_90();
         self.direction = (self.direction + 1) % 4;
     }
 
@@ -88,7 +93,7 @@ impl Tank {
         while self.direction != 3 {
             self.rotate_90();
         }
-        self.pos.x -= 2;
+        self.pos.x -= 1;
         self.sprite.force_update();
     }
 
@@ -97,7 +102,7 @@ impl Tank {
             self.rotate_90();
         }
         
-        self.pos.x += 2;
+        self.pos.x += 1;
         self.sprite.force_update();    
     }
 
@@ -105,7 +110,7 @@ impl Tank {
         while self.direction != 0 {
             self.rotate_90();
         }
-        self.pos.y -= 2;
+        self.pos.y -= 1;
         self.sprite.force_update();
     }
 
@@ -114,7 +119,7 @@ impl Tank {
             self.rotate_90();
         }
 
-        self.pos.y += 2;
+        self.pos.y += 1;
         self.sprite.force_update();
     }
 
@@ -172,12 +177,16 @@ impl Tank {
                 self.go_back();
             }
             for b in self.shots.iter_mut() {
-                let bullet_overlap = b.get_overlap(o);
-                if !bullet_overlap.is_empty() {
-                    b.explode();
-                }
-                for v in bullet_overlap {
-                    o.clean(&v.1);
+                if !o.is_transparent() {
+                    let bullet_overlap = b.get_overlap(o);
+                    if !bullet_overlap.is_empty() {
+                        b.explode();
+                    }
+                    if !o.is_solid() {
+                        for v in bullet_overlap {
+                            o.clean(&v.1);
+                        }
+                    }
                 }
             }
         }
@@ -198,7 +207,7 @@ impl Drawable for Tank {
 
 impl GameObject for Tank {
     fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        self.sprite.get_point_set()
+        self.area.get_point_set()
     }
 
     fn get_position(&self) -> Point {

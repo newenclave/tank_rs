@@ -7,8 +7,8 @@ use std::{
 
 use crossterm::event::{self, Event, KeyCode};
 use tank::{
-    braille_canvas::BrailleCanvas, canvas::Canvas, drawable::Drawable, position::AsPoint, render,
-    sprite::Sprite, tank::Tank, terminal, game_object::{self, GameObject}, obstacle::{Obstacles, Obstacle},
+    braille_canvas::BrailleCanvas, drawable::Drawable, render,
+    tank::Tank, terminal, obstacle::{Obstacles, Obstacle}, position::IndexType,
 };
 
 const CANVAS_MAX_X: usize = 120;
@@ -34,10 +34,16 @@ fn main() {
         }
     });
 
-    let mut tank = Tank::new(10, 10);
+    let mut tank = Tank::new(10, (CANVAS_MAX_Y - 15 as usize) as IndexType);
     let mut obstacles = Obstacles::new();
-    obstacles.add_obstacle(Obstacle::new_circle(20, 20, 10));
-    obstacles.add_obstacle(Obstacle::new_rect(40, 40, 60, 60));
+    obstacles.add_obstacle(Obstacle::new_circle(10, 10, 10));
+    obstacles.add_obstacle(Obstacle::new_rect(20, 0, 40, 20));
+    obstacles.add_obstacle(Obstacle::new_rect(40, 0, 60, 25));
+    obstacles.add_obstacle(Obstacle::new_transparent_rect(60, 0, 80, 50));
+    obstacles.add_obstacle(Obstacle::new_frame(0, 0, CANVAS_MAX_X as IndexType - 1, CANVAS_MAX_Y as IndexType - 1));
+    obstacles.get_all_mut()[0].set_solid(false);
+    obstacles.get_all_mut()[1].set_solid(false);
+    obstacles.get_all_mut()[4].set_visible(false);
 
     'mainloop: loop {
         let mut canvas = BrailleCanvas::new(CANVAS_MAX_X, CANVAS_MAX_Y);

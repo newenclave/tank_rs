@@ -6,10 +6,23 @@ pub struct Obstacle {
     sprite: Sprite,
     pos: Point,
     transparent: bool,
-    solid: bool
+    solid: bool,
+    visible: bool,
 }
 
 impl Obstacle {
+    pub fn new_frame(x1: IndexType, y1: IndexType, x2: IndexType, y2: IndexType) -> Self {
+        let mut s = Sprite::new();
+        s.draw_rectangle((x1, y1).as_point(), (x2, y2).as_point());
+        Self {
+            sprite: s,
+            pos: (x1, y1).as_point(),
+            transparent: false,
+            solid: true,
+            visible: true,
+        }
+    }
+
     pub fn new_rect(x1: IndexType, y1: IndexType, x2: IndexType, y2: IndexType) -> Self {
         let mut s = Sprite::new();
         for x in 0..x2-x1 {
@@ -21,9 +34,29 @@ impl Obstacle {
             sprite: s,
             pos: (x1, y1).as_point(),
             transparent: false,
-            solid: true
+            solid: true,
+            visible: true,
         }
     }
+
+    pub fn new_transparent_rect(x1: IndexType, y1: IndexType, x2: IndexType, y2: IndexType) -> Self {
+        let mut s = Sprite::new();
+        for x in 0..x2-x1 {
+            for y in 0..y2-y1 {
+                if (x + y) % 3 == 0 {
+                    s.draw_dot(x, y);
+                } 
+            }
+        } 
+        Self {
+            sprite: s,
+            pos: (x1, y1).as_point(),
+            transparent: true,
+            solid: false,
+            visible: true,
+        }
+    }
+
     pub fn new_circle(x1: IndexType, y1: IndexType, radius: IndexType) -> Self {
         let mut s = Sprite::new();
         for r in 1..=radius {
@@ -33,8 +66,21 @@ impl Obstacle {
             sprite: s,
             pos: (x1 - radius, y1 - radius).as_point(),
             transparent: false,
-            solid: true
+            solid: true,
+            visible: true,
         }
+    }
+
+    pub fn set_transparent(&mut self, value: bool) {
+        self.transparent = value;
+    }
+
+    pub fn set_solid(&mut self, value: bool) {
+        self.solid = value;
+    }
+
+    pub fn set_visible(&mut self, value: bool) {
+        self.visible = value;
     }
 
     pub fn update(&mut self, _: Duration) {}
@@ -46,6 +92,18 @@ impl Obstacle {
     pub fn clean(&mut self, dot: &Point) {
         self.sprite.clean(dot);
     }
+
+    pub fn is_solid(&self) -> bool {
+        self.solid
+    } 
+
+    pub fn is_transparent(&self) -> bool {
+        self.transparent
+    } 
+
+    pub fn is_visible(&self) -> bool {
+        self.visible
+    } 
 
 }
 
@@ -83,7 +141,9 @@ impl Obstacles {
 
 impl Drawable for Obstacle {
     fn draw(&self, canvas: &mut dyn Canvas) {
-        self.sprite.draw_to_canvas(canvas, self.pos.x, self.pos.y);
+        if self.visible {
+            self.sprite.draw_to_canvas(canvas, self.pos.x, self.pos.y);
+        }
     }
 }
 
@@ -97,7 +157,11 @@ impl Drawable for Obstacles {
 
 impl GameObject for Obstacle {
     fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        self.sprite.get_point_set()
+        if self.transparent {
+            None
+        } else {
+            self.sprite.get_point_set()
+        }
     }
 
     fn get_position(&self) -> Point {

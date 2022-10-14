@@ -1,6 +1,5 @@
 use crate::{
     canvas::Canvas,
-    drawable::Drawable,
     position::{AsPoint, IndexType, Point},
 };
 use std::{cmp::max, collections::HashSet};
