@@ -44,8 +44,8 @@ fn main() {
     obstacles.add_obstacle(Obstacle::new_circle(10, 10, 10));
     obstacles.add_obstacle(Obstacle::new_rect(20, 0, 40, 20));
     obstacles.add_obstacle(Obstacle::new_rect(40, 0, 60, 25));
-    obstacles.add_obstacle(Obstacle::new_transparent_rect(60, 0, 80, 25, 4));
-    obstacles.add_obstacle(Obstacle::new_transparent_rect(60, 25, 80, 50, 1));
+    obstacles.add_obstacle(Obstacle::new_transparent_rect(60, 0, 80, 25, 3));
+    obstacles.add_obstacle(Obstacle::new_transparent_rect(60, 25, 80, 50, 2));
     obstacles.add_obstacle(Obstacle::new_frame(
         0,
         0,

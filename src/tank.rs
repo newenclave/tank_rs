@@ -121,7 +121,6 @@ impl Tank {
         }
         self.pos = dir.go_forward(self.pos);
         self.sprite.force_update();
-
     }
 
     fn go_back(&mut self) {
