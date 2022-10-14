@@ -13,6 +13,12 @@ impl Sprite {
             max: Point::new(0, 0),
         }
     }
+    pub fn get_width(&self) -> IndexType {
+        self.max.x + 1
+    }
+    pub fn get_height(&self) -> IndexType {
+        self.max.y + 1
+    }
 }
 
 impl Canvas for Sprite {

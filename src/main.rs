@@ -15,5 +15,4 @@ fn main() {
     
     thread::sleep(Duration::from_secs(10));
     terminal::deinit(&mut stdout).unwrap();
-    println!("Ok");
 }
