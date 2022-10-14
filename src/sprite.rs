@@ -60,13 +60,17 @@ impl Sprite {
     pub fn clean(&mut self, dot: &Point) {
         self.values.remove(dot);
     }
-
 }
 
 impl Canvas for Sprite {
     fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool {
         self.values.insert((x, y).as_point());
         self.max = (max(x, self.max.x), max(y, self.max.y)).as_point();
+        true
+    }
+
+    fn clean_dot(&mut self, x: IndexType, y: IndexType) -> bool {
+        self.values.remove(&(x, y).as_point());
         true
     }
 }

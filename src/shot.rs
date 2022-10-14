@@ -1,12 +1,13 @@
-use std::{time::Duration, collections::HashSet};
+use std::{collections::HashSet, time::Duration};
 
 use crate::{
     animated::Animated,
     canvas::Canvas,
     drawable::Drawable,
+    game_object::GameObject,
     position::{AsPoint, IndexType, Point},
     sprite::Sprite,
-    timer::Timer, game_object::GameObject,
+    timer::Timer, direction::Direction,
 };
 
 const BULLET_SPRITE: &'static str = r#"
@@ -79,16 +80,16 @@ pub struct Shot {
     sprite: Animated,
     pos: Point,
     explode_pos: Point,
-    direction: u8,
+    direction: Direction,
     delay: Timer,
     exploding: bool,
 }
 
 impl Shot {
-    pub fn new(x: IndexType, y: IndexType, dir: u8) -> Self {
+    pub fn new(x: IndexType, y: IndexType, dir: Direction) -> Self {
         let mut s = Animated::new_static();
         s.add_sprite(Sprite::new_from_string(BULLET_SPRITE));
-        if dir == 1 || dir == 3 {
+        if dir == Direction::Left || dir == Direction::Right {
             s.rotate_90();
         }
         Self {
@@ -103,13 +104,7 @@ impl Shot {
 
     pub fn forward(&mut self) {
         if !self.exploding {
-            match self.direction {
-                0 => self.pos.y -= 1,
-                1 => self.pos.x += 1,
-                2 => self.pos.y += 1,
-                3 => self.pos.x -= 1,
-                _ => {}
-            }
+            self.pos = self.direction.go_forward(self.pos);
         }
     }
 
@@ -121,7 +116,7 @@ impl Shot {
         if self.exploding {
             self.fix_explode_pos();
         }
-      }
+    }
 
     pub fn explode(&mut self) -> bool {
         if !self.exploding {

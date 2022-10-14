@@ -4,6 +4,7 @@ use crate::position::{AsPoint, IndexType, Point};
 
 pub trait Canvas {
     fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool;
+    fn clean_dot(&mut self, x: IndexType, y: IndexType) -> bool;
 
     fn draw_line(&mut self, from: Point, to: Point) {
         let dx: i32 = to.x as i32 - from.x as i32;

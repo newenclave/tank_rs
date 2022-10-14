@@ -1,5 +1,5 @@
 use crate::{canvas::Canvas, position::IndexType, position::Point, sprite::Sprite, timer::Timer};
-use std::{cmp::max, time::Duration, collections::HashSet};
+use std::{cmp::max, collections::HashSet, time::Duration};
 
 pub struct Animated {
     sprites: Vec<Sprite>,
@@ -132,5 +132,4 @@ impl Animated {
         }
         true
     }
-
 }

@@ -29,18 +29,31 @@ impl BrailleCanvas {
     pub fn area(&self) -> &Vec<Vec<u8>> {
         &self.area
     }
-}
 
-impl Canvas for BrailleCanvas {
-    fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool {
+    fn change_symbol_for(
+        &mut self,
+        x: IndexType,
+        y: IndexType,
+        call: fn(u8, usize, usize) -> u8,
+    ) -> bool {
         if x >= 0 && y >= 0 {
             let (fix_x, fix_y, pos_x, pos_y) = self.to_coord(x as usize, y as usize);
             if fix_x < self.area.len() && fix_y < self.area[fix_x].len() {
                 let value = self.area[fix_x][fix_y];
-                self.area[fix_x][fix_y] = braille::set_dot(value, pos_x, pos_y);
+                self.area[fix_x][fix_y] = call(value, pos_x, pos_y);
                 return true;
             }
         }
         false
+    }
+}
+
+impl Canvas for BrailleCanvas {
+    fn draw_dot(&mut self, x: IndexType, y: IndexType) -> bool {
+        self.change_symbol_for(x, y, braille::set_dot)
+    }
+
+    fn clean_dot(&mut self, x: IndexType, y: IndexType) -> bool {
+        self.change_symbol_for(x, y, braille::clean_dot)
     }
 }
