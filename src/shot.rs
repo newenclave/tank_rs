@@ -1,4 +1,4 @@
-use std::{collections::HashSet, time::Duration};
+use std::time::Duration;
 
 use crate::{
     animated::Animated,
@@ -7,7 +7,7 @@ use crate::{
     game_object::GameObject,
     position::{AsPoint, IndexType, Point},
     sprite::Sprite,
-    timer::Timer, direction::Direction,
+    timer::Timer, direction::Direction, game_object_area::GameObjectArea, game_object_impls::GameObjectAnimated,
 };
 
 const BULLET_SPRITE: &'static str = r#"
@@ -66,7 +66,7 @@ const BULLET_EXPLODE_07: &'static str = r#"
    | X X
 "#;
 
-const BILLET_ANIMATED: [&'static str; 7] = [
+const BULLET_ANIMATED: [&'static str; 7] = [
     BULLET_EXPLODE_01,
     BULLET_EXPLODE_02,
     BULLET_EXPLODE_03,
@@ -77,8 +77,7 @@ const BILLET_ANIMATED: [&'static str; 7] = [
 ];
 
 pub struct Shot {
-    sprite: Animated,
-    pos: Point,
+    area: GameObjectAnimated,
     explode_pos: Point,
     direction: Direction,
     delay: Timer,
@@ -93,8 +92,7 @@ impl Shot {
             s.rotate_90();
         }
         Self {
-            sprite: s,
-            pos: (x, y).as_point(),
+            area: GameObjectAnimated::new(s, x, y),
             explode_pos: (x, y).as_point(),
             direction: dir,
             delay: Timer::new(Duration::from_millis(25)),
@@ -104,12 +102,13 @@ impl Shot {
 
     pub fn forward(&mut self) {
         if !self.exploding {
-            self.pos = self.direction.go_forward(self.pos);
+            let fixed_pos = self.direction.go_forward(self.area.get_pos());
+            self.area.move_to(fixed_pos.x, fixed_pos.y);
         }
     }
 
     pub fn update(&mut self, delta: Duration) {
-        self.sprite.update(delta);
+        self.area.sprite.update(delta);
         if self.delay.update(delta) {
             self.forward()
         }
@@ -120,16 +119,14 @@ impl Shot {
 
     pub fn explode(&mut self) -> bool {
         if !self.exploding {
-            self.explode_pos = Point {
-                x: self.pos.x + self.sprite.get_current_width() / 2,
-                y: self.pos.y + self.sprite.get_current_height() / 2,
-            };
+            self.explode_pos = self.area.get_center_pos();
             self.exploding = true;
             self.delay = Timer::from_millis(500);
-            self.sprite = Animated::new_looped(Duration::from_millis(100));
-            for s in BILLET_ANIMATED {
-                self.sprite.add_sprite(Sprite::new_from_string(s));
+            let mut explode = Animated::new_looped(Duration::from_millis(100));
+            for s in BULLET_ANIMATED {
+                explode.add_sprite(Sprite::new_from_string(s));
             }
+            self.area.set_point_set(explode); 
             self.fix_explode_pos();
             return true;
         }
@@ -137,40 +134,23 @@ impl Shot {
     }
 
     fn fix_explode_pos(&mut self) {
-        let cur_w = self.sprite.get_current_width() / 2;
-        let cur_h = self.sprite.get_current_height() / 2;
-        self.pos = (self.explode_pos.x - cur_w, self.explode_pos.y - cur_h).as_point();
+        self.area.move_center_to(self.explode_pos.x, self.explode_pos.y)
     }
 
     pub fn is_done(&self) -> bool {
         self.exploding && self.delay.ready()
     }
 
-    pub fn get_pos(&self) -> Point {
-        self.pos
-    }
 }
 
 impl Drawable for Shot {
     fn draw(&self, canvas: &mut dyn Canvas) {
-        self.sprite.draw_to_canvas(canvas, self.pos.x, self.pos.y)
+        self.area.draw_to_canvas(canvas)
     }
 }
 
 impl GameObject for Shot {
-    fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        self.sprite.get_point_set()
-    }
-
-    fn get_position(&self) -> Point {
-        self.pos
-    }
-
-    fn get_width(&self) -> IndexType {
-        self.sprite.get_current_width()
-    }
-
-    fn get_height(&self) -> IndexType {
-        self.sprite.get_current_height()
+    fn get_area(&self) -> &dyn GameObjectArea {
+        &self.area
     }
 }

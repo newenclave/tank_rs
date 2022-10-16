@@ -15,6 +15,11 @@ impl Point {
         let delta_y = self.y as f32 - other.y as f32;
         (delta_x * delta_x + delta_y * delta_y).sqrt()
     }
+
+    pub fn move_to(&mut self, x: IndexType, y: IndexType) {
+        self.x = x;
+        self.y = y;
+    }
 }
 
 pub trait AsPoint {

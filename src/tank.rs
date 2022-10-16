@@ -1,4 +1,4 @@
-use std::{collections::HashSet, time::Duration};
+use std::time::Duration;
 
 use crate::{
     animated::Animated,
@@ -10,14 +10,14 @@ use crate::{
     shot::Shot,
     sprite::Sprite,
     timer::Timer, 
-    direction::Direction,
+    direction::Direction, 
+    point_set::PointSet, game_object_area::GameObjectArea, game_object_impls::GameObjectAnimated
 };
 
 pub struct Tank {
-    sprite: Animated,
-    area: Sprite,
+    area: GameObjectAnimated,
+    border: Sprite,
     direction: Direction,
-    pos: Point,
     shots: Vec<Shot>,
     recharge_delay: Timer,
 }
@@ -63,23 +63,22 @@ impl Tank {
         tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_02));
         tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_03));
         let mut a = Sprite::new();
-        for x in 0..tank_animated.get_current_width() {
-            for y in 0..tank_animated.get_current_height() {
+        for x in 0..=tank_animated.get_max().x {
+            for y in 0..=tank_animated.get_max().y {
                 a.draw_dot(x, y);
             }
         }
         Self {
-            sprite: tank_animated,
-            area: a,
+            area: GameObjectAnimated::new(tank_animated, x, y),
+            border: a,
             direction: Direction::Up,
-            pos: (x, y).as_point(),
             shots: Vec::new(),
             recharge_delay: Timer::new(Duration::from_millis(250)),
         }
     }
 
     pub fn update(&mut self, delta: Duration) {
-        self.sprite.update(delta);
+        self.area.sprite.update(delta);
         for s in self.shots.iter_mut() {
             s.update(delta);
         }
@@ -94,8 +93,8 @@ impl Tank {
     }
 
     pub fn rotate_90(&mut self) {
-        self.sprite.rotate_90();
-        self.area.rotate_90();
+        self.area.sprite.rotate_90();
+        self.border.rotate_90();
         self.direction = self.direction.next_clockwise();
     }
 
@@ -119,17 +118,19 @@ impl Tank {
         while self.direction != dir {
             self.rotate_90();
         }
-        self.pos = dir.go_forward(self.pos);
-        self.sprite.force_update();
+        let fixed_pos = dir.go_forward(self.get_pos());
+        self.area.move_to(fixed_pos.x, fixed_pos.y);
+        self.area.sprite.force_update();
     }
 
     fn go_back(&mut self) {
-        self.pos = self.direction.go_back(self.pos)
+        let fixed_pos = self.direction.go_back(self.get_pos());
+        self.area.move_to(fixed_pos.x, fixed_pos.y);
     }
 
     pub fn shoot(&mut self) {
         if self.recharge_delay.ready() {
-            let center = self.get_center();
+            let center = self.get_front_center();
             self.shots
                 .push(Shot::new(center.x, center.y, self.direction));
             self.recharge_delay.reset()
@@ -142,17 +143,14 @@ impl Tank {
         }
     }
 
-    pub fn get_center(&self) -> Point {
-        let pos = (
-            self.sprite.get_current_width() / 2,
-            self.sprite.get_current_height() / 2,
-        )
-            .as_point();
+    pub fn get_front_center(&self) -> Point {
+        let pos = self.area.get_pos();
+        let spos = (self.get_width() / 2, self.get_height() / 2);
         match self.direction {
-            Direction::Up => (self.pos.x + pos.x, self.pos.y).as_point(),
-            Direction::Right => (self.pos.x + pos.x, self.pos.y + pos.y).as_point(),
-            Direction::Down => (self.pos.x + pos.x, self.pos.y + pos.y).as_point(),
-            Direction::Left => (self.pos.x, self.pos.y + pos.y).as_point(),
+            Direction::Up => (spos.0 + pos.x, pos.y).as_point(),
+            Direction::Right => (spos.0 + pos.x, spos.1 + pos.y).as_point(),
+            Direction::Down => (spos.0 + pos.x, spos.1 + pos.y).as_point(),
+            Direction::Left => (pos.x, spos.1 + pos.y).as_point(),
         }
     }
 
@@ -187,9 +185,7 @@ impl Tank {
 
 impl Drawable for Tank {
     fn draw(&self, canvas: &mut dyn crate::canvas::Canvas) {
-        if let Some(sprite) = self.sprite.get_current_sprite() {
-            sprite.draw_to_canvas(canvas, self.pos.x, self.pos.y);
-        }
+        self.area.draw_to_canvas(canvas);
         for s in self.shots.iter() {
             s.draw(canvas);
         }
@@ -197,19 +193,7 @@ impl Drawable for Tank {
 }
 
 impl GameObject for Tank {
-    fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        self.area.get_point_set()
-    }
-
-    fn get_position(&self) -> Point {
-        self.pos
-    }
-
-    fn get_width(&self) -> IndexType {
-        self.sprite.get_current_width()
-    }
-
-    fn get_height(&self) -> IndexType {
-        self.sprite.get_current_height()
+    fn get_area(&self) -> &dyn GameObjectArea {
+        &self.area
     }
 }

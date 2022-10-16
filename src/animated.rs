@@ -1,4 +1,4 @@
-use crate::{canvas::Canvas, position::IndexType, position::Point, sprite::Sprite, timer::Timer};
+use crate::{canvas::Canvas, position::IndexType, position::Point, sprite::Sprite, timer::Timer, point_set::PointSet};
 use std::{cmp::max, collections::HashSet, time::Duration};
 
 pub struct Animated {
@@ -41,8 +41,8 @@ impl Animated {
     }
 
     pub fn add_sprite(&mut self, sprite: Sprite) {
-        self.max_pos.x = max(sprite.get_width() - 1, self.max_pos.x);
-        self.max_pos.y = max(sprite.get_height() - 1, self.max_pos.y);
+        self.max_pos.x = max(sprite.get_max().x, self.max_pos.x);
+        self.max_pos.y = max(sprite.get_max().y, self.max_pos.y);
         self.sprites.push(sprite);
     }
 
@@ -88,22 +88,6 @@ impl Animated {
         }
     }
 
-    pub fn get_current_width(&self) -> IndexType {
-        if self.sprites.is_empty() {
-            0
-        } else {
-            self.sprites[self.id].get_width()
-        }
-    }
-
-    pub fn get_current_height(&self) -> IndexType {
-        if self.sprites.is_empty() {
-            0
-        } else {
-            self.sprites[self.id].get_height()
-        }
-    }
-
     pub fn rotate_90(&mut self) {
         for sprite in self.sprites.iter_mut() {
             sprite.rotate_90();
@@ -116,14 +100,6 @@ impl Animated {
         }
     }
 
-    pub fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        if let Some(sprite) = self.get_current_sprite() {
-            sprite.get_point_set()
-        } else {
-            None
-        }
-    }
-
     pub fn is_empty(&self) -> bool {
         for s in self.sprites.iter() {
             if !s.is_empty() {
@@ -131,5 +107,36 @@ impl Animated {
             }
         }
         true
+    }
+}
+
+
+impl PointSet for Animated {
+    fn get_point_set(&self) -> Option<&HashSet<Point>> {
+        if let Some(sprite) = self.get_current_sprite() {
+            sprite.get_point_set()
+        } else {
+            None
+        }
+    }
+    
+    fn get_max(&self) -> Point {
+        if self.sprites.is_empty() {
+            Point::new(0, 0)
+        } else {
+            self.sprites[self.id].get_max()
+        }
+    }
+
+    fn is_empty(&self) -> bool {
+        if self.sprites.is_empty() {
+            return true;
+        }
+        for s in self.sprites.iter() {
+            if s.is_empty() {
+                return true;
+            }
+        }
+        false
     }
 }

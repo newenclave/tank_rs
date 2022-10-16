@@ -1,4 +1,4 @@
-use crate::position::{AsPoint, IndexType, Point};
+use crate::{position::{AsPoint, IndexType, Point}, game_object_area::GameObjectArea};
 use std::{
     cmp::{max, min},
     collections::HashSet,
@@ -76,12 +76,26 @@ fn game_object_intersection(
 }
 
 pub trait GameObject {
-    fn get_point_set(&self) -> Option<&HashSet<Point>>;
-    fn get_position(&self) -> Point;
-    fn get_width(&self) -> IndexType;
-    fn get_height(&self) -> IndexType;
+    fn get_area(&self) -> &dyn GameObjectArea;
+    
+    fn get_point_set(&self) -> Option<&HashSet<Point>> {
+        self.get_area().get_point_set()
+    }
+
+    fn get_pos(&self) -> Point {
+        self.get_area().get_pos()
+    }
+
+    fn get_width(&self) -> IndexType {
+        self.get_area().get_width()
+    }
+
+    fn get_height(&self) -> IndexType {
+        self.get_area().get_height()
+    }
+
     fn get_rect(&self) -> (Point, Point) {
-        let pos = self.get_position();
+        let pos = self.get_pos();
         (
             pos,
             Point::new(pos.x + self.get_width(), pos.y + self.get_height()),

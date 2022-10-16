@@ -5,12 +5,11 @@ use crate::{
     drawable::Drawable,
     game_object::GameObject,
     position::{AsPoint, IndexType, Point},
-    sprite::Sprite,
+    sprite::Sprite, game_object_area::GameObjectArea, game_object_impls::GameObjectStatic,
 };
 
 pub struct Obstacle {
-    sprite: Sprite,
-    pos: Point,
+    area: GameObjectStatic,
     transparent: bool,
     solid: bool,
     visible: bool,
@@ -23,8 +22,7 @@ impl Obstacle {
         let mut s = Sprite::new();
         s.draw_rectangle((x1, y1).as_point(), (x2, y2).as_point());
         Self {
-            sprite: s,
-            pos: (x1, y1).as_point(),
+            area: GameObjectStatic::new(s, x1, y1),
             transparent: false,
             solid: true,
             visible: true,
@@ -41,8 +39,7 @@ impl Obstacle {
             }
         }
         Self {
-            sprite: s,
-            pos: (x1, y1).as_point(),
+            area: GameObjectStatic::new(s, x1, y1),
             transparent: false,
             solid: true,
             visible: true,
@@ -67,8 +64,7 @@ impl Obstacle {
             }
         }
         Self {
-            sprite: s,
-            pos: (x1, y1).as_point(),
+            area: GameObjectStatic::new(s, x1, y1),
             transparent: true,
             solid: false,
             visible: true,
@@ -83,8 +79,7 @@ impl Obstacle {
             s.draw_circle((x1, y1).as_point(), r);
         }
         Self {
-            sprite: s,
-            pos: (x1 - radius, y1 - radius).as_point(),
+            area: GameObjectStatic::new(s, x1 - radius, y1 - radius),
             transparent: false,
             solid: true,
             visible: true,
@@ -114,11 +109,11 @@ impl Obstacle {
     }
 
     pub fn is_done(&self) -> bool {
-        self.sprite.is_empty()
+        self.area.sprite.is_empty()
     }
 
     pub fn clean(&mut self, dot: &Point) {
-        self.sprite.clean(dot);
+        self.area.sprite.clean(dot);
     }
 
     pub fn is_solid(&self) -> bool {
@@ -174,9 +169,10 @@ impl Obstacles {
 impl Drawable for Obstacle {
     fn draw(&self, canvas: &mut dyn Canvas) {
         if self.visible {
-            self.sprite.draw_to_canvas(canvas, self.pos.x, self.pos.y);
+            self.area.draw_to_canvas(canvas);
+            let area_pos = self.area.get_pos();
             for p in self.invisible.iter() {
-                canvas.clean_dot(p.x + self.pos.x, p.y + self.pos.y);
+                canvas.clean_dot(p.x + area_pos.x, p.y + area_pos.y);
             }
         }
     }
@@ -191,19 +187,7 @@ impl Drawable for Obstacles {
 }
 
 impl GameObject for Obstacle {
-    fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        self.sprite.get_point_set()
-    }
-
-    fn get_position(&self) -> Point {
-        self.pos
-    }
-
-    fn get_width(&self) -> IndexType {
-        self.sprite.get_width()
-    }
-
-    fn get_height(&self) -> IndexType {
-        self.sprite.get_height()
+    fn get_area(&self) -> &dyn GameObjectArea {
+        &self.area
     }
 }

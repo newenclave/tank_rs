@@ -1,6 +1,7 @@
 use crate::{
     canvas::Canvas,
     position::{AsPoint, IndexType, Point},
+    point_set::PointSet
 };
 use std::{cmp::max, collections::HashSet};
 
@@ -26,14 +27,6 @@ impl Sprite {
         instance
     }
 
-    pub fn get_width(&self) -> IndexType {
-        self.max.x + 1
-    }
-
-    pub fn get_height(&self) -> IndexType {
-        self.max.y + 1
-    }
-
     pub fn rotate_90(&mut self) {
         let mut tmp = Self::new();
         for p in self.values.iter() {
@@ -49,16 +42,24 @@ impl Sprite {
         }
     }
 
-    pub fn get_point_set(&self) -> Option<&HashSet<Point>> {
-        Some(&self.values)
-    }
-
     pub fn is_empty(&self) -> bool {
         self.values.is_empty()
     }
 
     pub fn clean(&mut self, dot: &Point) {
         self.values.remove(dot);
+    }
+}
+
+impl PointSet for Sprite {
+    fn get_point_set(&self) -> Option<&HashSet<Point>> {
+        Some(&self.values)
+    }
+    fn get_max(&self) -> Point {
+        self.max
+    }
+    fn is_empty(&self) -> bool {
+        self.values.is_empty()
     }
 }
 
