@@ -5,7 +5,7 @@ use crate::{
     canvas::Canvas,
     drawable::Drawable,
     game_object::game_object::GameObject,
-    obstacle::Obstacles,
+    obstacle::{Obstacles, Obstacle},
     position::{AsPoint, IndexType, Point},
     shot::Shot,
     sprite::Sprite,
@@ -81,11 +81,7 @@ impl Tank {
             s.update(delta);
         }
         self.shots.retain(|s| {
-            s.get_pos().x >= 0
-                && s.get_pos().x <= 120
-                && s.get_pos().y >= 0
-                && s.get_pos().y <= 80
-                && !s.is_done()
+            !s.is_done()
         });
         self.recharge_delay.update(delta);
     }
@@ -156,6 +152,22 @@ impl Tank {
         }
     }
 
+    fn check_shots_obstacle(&mut self, o: &mut Obstacle) {
+        for b in self.shots.iter_mut() {
+            let bullet_overlap = b.get_overlap(o);
+            if !o.is_transparent() {
+                if !bullet_overlap.is_empty() {
+                    b.explode();
+                }
+                if !o.is_solid() {
+                    for v in bullet_overlap {
+                        o.clean(&v.1);
+                    }
+                }
+            }
+        }
+    }
+
     pub fn check_obstacles(&mut self, obstacles: &mut Obstacles) {
         for o in obstacles.get_all_mut().iter_mut() {
             let tank_overlap = self.get_overlap(o);
@@ -168,19 +180,7 @@ impl Tank {
                     }
                 }
             }
-            for b in self.shots.iter_mut() {
-                let bullet_overlap = b.get_overlap(o);
-                if !o.is_transparent() {
-                    if !bullet_overlap.is_empty() {
-                        b.explode();
-                    }
-                    if !o.is_solid() {
-                        for v in bullet_overlap {
-                            o.clean(&v.1);
-                        }
-                    }
-                }
-            }
+            self.check_shots_obstacle(o);
         }
     }
 }
