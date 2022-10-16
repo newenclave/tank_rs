@@ -1,4 +1,6 @@
-use crate::{position::{AsPoint, IndexType, Point}, game_object_area::GameObjectArea};
+use crate::{position::{AsPoint, IndexType, Point}};
+use crate::game_object_area::GameObjectArea;
+
 use std::{
     cmp::{max, min},
     collections::HashSet,

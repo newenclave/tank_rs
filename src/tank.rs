@@ -1,10 +1,10 @@
-use std::time::Duration;
+use std::{time::Duration, collections::HashSet};
 
 use crate::{
     animated::Animated,
     canvas::Canvas,
     drawable::Drawable,
-    game_object::GameObject,
+    game_object::game_object::GameObject,
     obstacle::Obstacles,
     position::{AsPoint, IndexType, Point},
     shot::Shot,
@@ -115,12 +115,16 @@ impl Tank {
     }
 
     fn goto(&mut self, dir: Direction) { 
+        let mut turned = false;
         while self.direction != dir {
+            turned = true;
             self.rotate_90();
         }
-        let fixed_pos = dir.go_forward(self.get_pos());
-        self.area.move_to(fixed_pos.x, fixed_pos.y);
-        self.area.sprite.force_update();
+        if !turned {
+            let fixed_pos = dir.go_forward(self.get_pos());
+            self.area.move_to(fixed_pos.x, fixed_pos.y);
+            self.area.sprite.force_update();    
+        }
     }
 
     fn go_back(&mut self) {
@@ -195,5 +199,8 @@ impl Drawable for Tank {
 impl GameObject for Tank {
     fn get_area(&self) -> &dyn GameObjectArea {
         &self.area
+    }
+    fn get_point_set(&self) -> Option<&HashSet<Point>> {
+        self.border.get_point_set()
     }
 }

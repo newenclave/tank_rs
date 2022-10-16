@@ -4,10 +4,12 @@ use crate::{
     animated::Animated,
     canvas::Canvas,
     drawable::Drawable,
-    game_object::GameObject,
     position::{AsPoint, IndexType, Point},
     sprite::Sprite,
-    timer::Timer, direction::Direction, game_object_area::GameObjectArea, game_object_impls::GameObjectAnimated,
+    timer::Timer, direction::Direction, 
+    game_object_area::GameObjectArea, 
+    game_object_impls::GameObjectAnimated, 
+    game_object::game_object::GameObject,
 };
 
 const BULLET_SPRITE: &'static str = r#"

@@ -5,8 +5,6 @@ pub mod canvas;
 pub mod direction;
 pub mod drawable;
 pub mod game_object;
-pub mod game_object_area;
-pub mod game_object_impls;
 pub mod obstacle;
 pub mod point_set;
 pub mod position;
@@ -16,3 +14,5 @@ pub mod sprite;
 pub mod tank;
 pub mod terminal;
 pub mod timer;
+
+use crate::game_object::*;

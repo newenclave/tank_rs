@@ -3,7 +3,7 @@ use std::{collections::HashSet, time::Duration};
 use crate::{
     canvas::Canvas,
     drawable::Drawable,
-    game_object::GameObject,
+    game_object::game_object::GameObject,
     position::{AsPoint, IndexType, Point},
     sprite::Sprite, game_object_area::GameObjectArea, game_object_impls::GameObjectStatic,
 };
