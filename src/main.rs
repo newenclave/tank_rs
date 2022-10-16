@@ -55,7 +55,7 @@ fn main() {
     obstacles.get_all_mut()[0].set_solid(false);
     obstacles.get_all_mut()[1].set_solid(false);
     obstacles.get_all_mut()[4].set_ground(true);
-    obstacles.get_all_mut()[5].set_visible(false);
+    obstacles.get_all_mut()[5].set_visible(false); // frame
 
     'mainloop: loop {
         let mut canvas = BrailleCanvas::new(CANVAS_MAX_X, CANVAS_MAX_Y);

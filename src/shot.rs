@@ -76,26 +76,27 @@ impl Shot {
             area: GameObjectAnimated::new(s, x, y),
             explode_pos: (x, y).as_point(),
             direction: dir,
-            delay: Timer::new(Duration::from_millis(25)),
+            delay: Timer::new(Duration::from_millis(15)),
             exploding: false,
         }
     }
 
-    pub fn forward(&mut self) {
-        if !self.exploding {
-            let fixed_pos = self.direction.go_forward(self.area.get_pos());
-            self.area.move_to(fixed_pos.x, fixed_pos.y);
-        }
+    fn forward(&mut self) {
+        let fixed_pos = self.direction.go_forward(self.area.get_pos());
+        self.area.move_to(fixed_pos.x, fixed_pos.y);
     }
 
     pub fn update(&mut self, delta: Duration) {
         self.area.sprite.update(delta);
         if self.delay.update(delta) {
-            self.forward()
+            if !self.exploding {
+                self.forward();
+                self.delay.reset();
+            }
         }
         if self.exploding {
             self.fix_explode_pos();
-        }
+        } 
     }
 
     pub fn explode(&mut self) -> bool {

@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{
     position::{
         Point, 
@@ -8,7 +10,7 @@ use crate::{
 };
 
 pub trait GameObjectArea {
-    fn get_point_set(&self) -> Option<&std::collections::HashSet<Point>>;
+    fn get_point_set(&self) -> Option<&HashSet<Point>>;
     fn get_pos(&self) -> Point;
     fn get_width(&self) -> crate::position::IndexType;
     fn get_height(&self) -> crate::position::IndexType;
@@ -40,7 +42,7 @@ impl<T> GameObjectArea for GameObjectAreaImpl<T>
 where 
     T: PointSet
 {
-    fn get_point_set(&self) -> Option<&std::collections::HashSet<Point>> {
+    fn get_point_set(&self) -> Option<&HashSet<Point>> {
         self.sprite.get_point_set()
     }
 
@@ -53,11 +55,11 @@ where
         (p.x + self.get_width() / 2, p.y + self.get_height() / 2).as_point()
     }
 
-    fn get_width(&self) -> crate::position::IndexType {
+    fn get_width(&self) -> IndexType {
         self.sprite.get_max().x + 1
     }
 
-    fn get_height(&self) -> crate::position::IndexType {
+    fn get_height(&self) -> IndexType {
         self.sprite.get_max().y + 1
     }
 
