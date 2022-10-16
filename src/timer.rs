@@ -29,6 +29,10 @@ impl Timer {
         self.ready = self.duration.is_zero();
     }
 
+    pub fn is_max_duration(&self) -> bool {
+        self.duration == Duration::MAX
+    }
+
     pub fn update(&mut self, delta: Duration) -> bool {
         if !self.ready {
             if let Some(time_left) = self.time_left.checked_sub(delta) {

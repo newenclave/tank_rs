@@ -1,4 +1,5 @@
 pub mod animated;
+pub mod animation_builder;
 pub mod braille;
 pub mod braille_canvas;
 pub mod canvas;

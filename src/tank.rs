@@ -1,7 +1,7 @@
 use std::{time::Duration, collections::HashSet};
 
 use crate::{
-    animated::Animated,
+    animation_builder::AnimationBuilder,
     canvas::Canvas,
     drawable::Drawable,
     game_object::game_object::GameObject,
@@ -23,7 +23,7 @@ pub struct Tank {
     recharge_delay: Timer,
 }
 
-const TANK_SPRITE_01: &'static str = r#"
+const TANK_SPRITE: &'static str = r#"
 +   *
 |   *
 | *****
@@ -33,8 +33,7 @@ const TANK_SPRITE_01: &'static str = r#"
 |* ***  
 |      *
 |  *** 
-"#;
-const TANK_SPRITE_02: &'static str = r#"
+-
 +   *
 |   *
 | *****
@@ -44,8 +43,7 @@ const TANK_SPRITE_02: &'static str = r#"
 |  *** *
 |*     *
 |  *** 
-"#;
-const TANK_SPRITE_03: &'static str = r#"
+-
 +   *
 |   *
 | *****
@@ -59,10 +57,9 @@ const TANK_SPRITE_03: &'static str = r#"
 
 impl Tank {
     pub fn new(x: IndexType, y: IndexType) -> Self {
-        let mut tank_animated = Animated::new_static();
-        tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_01));
-        tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_02));
-        tank_animated.add_sprite(Sprite::new_from_string(TANK_SPRITE_03));
+        let tank_animated = AnimationBuilder::new_static()
+            .add_from_string(TANK_SPRITE)
+            .build();
         let mut a = Sprite::new();
         for x in 0..=tank_animated.get_max().x {
             for y in 0..=tank_animated.get_max().y {
@@ -124,7 +121,7 @@ impl Tank {
         if !turned {
             let fixed_pos = dir.go_forward(self.get_pos());
             self.area.move_to(fixed_pos.x, fixed_pos.y);
-            self.area.sprite.force_update();    
+            self.area.sprite.update_force();    
         }
     }
 

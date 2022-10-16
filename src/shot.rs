@@ -1,11 +1,10 @@
 use std::time::Duration;
 
 use crate::{
-    animated::Animated,
+    animation_builder::AnimationBuilder,
     canvas::Canvas,
     drawable::Drawable,
     position::{AsPoint, IndexType, Point},
-    sprite::Sprite,
     timer::Timer, direction::Direction, 
     game_object::{GameObjectArea, GameObjectAnimated, GameObject},
 };
@@ -16,65 +15,43 @@ const BULLET_SPRITE: &'static str = r#"
   |x
 "#;
 
-const BULLET_EXPLODE_01: &'static str = r#"
+const BULLET_EXPLODE: &'static str = r#"
   +XX
   |XX
-"#;
-
-const BULLET_EXPLODE_02: &'static str = r#" 
+-  
   + X 
   |X X
   | X
-"#;
-
-const BULLET_EXPLODE_03: &'static str = r#" 
+-
   + XX 
   |X  X
   |X  X
   | XX
-"#;
-
-const BULLET_EXPLODE_04: &'static str = r#"  
+-  
   +  X 
   |X   X
   |X X X
   |X   X
   |  X
-"#;
-
-const BULLET_EXPLODE_05: &'static str = r#"   
-  +   X 
-  | X   X
-  |X  X  X
-  | X   X
-  |   X
-"#;
-
-const BULLET_EXPLODE_06: &'static str = r#"   
-  +    X 
-  |  X   X
-  | X  X  X
-  |X X X X X
-  | X  X  X
-  |  X   X
-  |    X
-"#;
-
-const BULLET_EXPLODE_07: &'static str = r#"  
+-
+ +   X 
+ | X   X
+ |X  X  X
+ | X   X
+ |   X
+-
++    X 
+|  X   X
+| X  X  X
+|X X X X X
+| X  X  X
+|  X   X
+|    X
+-
    + X X
    |X X X
    | X X
 "#;
-
-const BULLET_ANIMATED: [&'static str; 7] = [
-    BULLET_EXPLODE_01,
-    BULLET_EXPLODE_02,
-    BULLET_EXPLODE_03,
-    BULLET_EXPLODE_04,
-    BULLET_EXPLODE_05,
-    BULLET_EXPLODE_06,
-    BULLET_EXPLODE_07,
-];
 
 pub struct Shot {
     area: GameObjectAnimated,
@@ -86,11 +63,15 @@ pub struct Shot {
 
 impl Shot {
     pub fn new(x: IndexType, y: IndexType, dir: Direction) -> Self {
-        let mut s = Animated::new_static();
-        s.add_sprite(Sprite::new_from_string(BULLET_SPRITE));
-        if dir == Direction::Left || dir == Direction::Right {
-            s.rotate_90();
-        }
+        let s = AnimationBuilder::new_static()
+                .add_sprite_from_string(BULLET_SPRITE)
+                .modify(|mut a| {
+                    if dir == Direction::Left || dir == Direction::Right {
+                        a.rotate_90();
+                    }
+                    a
+                })
+                .build();
         Self {
             area: GameObjectAnimated::new(s, x, y),
             explode_pos: (x, y).as_point(),
@@ -122,10 +103,9 @@ impl Shot {
             self.explode_pos = self.area.get_center_pos();
             self.exploding = true;
             self.delay = Timer::from_millis(500);
-            let mut explode = Animated::new_looped(Duration::from_millis(100));
-            for s in BULLET_ANIMATED {
-                explode.add_sprite(Sprite::new_from_string(s));
-            }
+            let explode = AnimationBuilder::new_looped(Duration::from_millis(100))
+                .add_from_string(BULLET_EXPLODE)
+                .build();
             self.area.set_point_set(explode); 
             self.fix_explode_pos();
             return true;

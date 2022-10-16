@@ -40,6 +40,14 @@ impl Animated {
         }
     }
 
+    pub fn add_from_string(&mut self, mut s: &str) {
+        while !s.is_empty() {
+            let mut next = Sprite::new();
+            s = next.draw_from_string(s);
+            self.add_sprite(next);
+        }
+    }
+
     pub fn add_sprite(&mut self, sprite: Sprite) {
         self.max_pos.x = max(sprite.get_max().x, self.max_pos.x);
         self.max_pos.y = max(sprite.get_max().y, self.max_pos.y);
@@ -47,34 +55,38 @@ impl Animated {
     }
 
     pub fn update(&mut self, delta: Duration) {
-        if self.sprites.is_empty() {
+        if self.sprites.is_empty() || self.is_static() {
             return;
         }
         if self.delay.update(delta) {
-            if !self.done() {
+            if !self.is_done() {
                 self.id = (self.id + 1) % self.sprites.len();
                 self.delay.reset();
             }
         }
     }
 
-    pub fn force_update(&mut self) {
+    pub fn update_force(&mut self) {
         if !self.sprites.is_empty() {
             self.id = (self.id + 1) % self.sprites.len();
             self.delay.reset();
         }
     }
 
+    fn is_static(&self) -> bool {
+        self.delay.is_max_duration()
+    }
+
     fn end(&self) -> bool {
         self.sprites.is_empty() || self.id == (self.sprites.len() - 1)
     }
 
-    pub fn done(&self) -> bool {
+    fn is_done(&self) -> bool {
         !self.looped && self.end() && self.delay.ready()
     }
 
     pub fn reset(&mut self) {
-        if self.done() {
+        if self.is_done() {
             self.delay.reset();
             self.id = 0;
         }
