@@ -11,7 +11,8 @@ use crate::{
     sprite::Sprite,
     timer::Timer, 
     direction::Direction, 
-    point_set::PointSet, game_object_area::GameObjectArea, game_object_impls::GameObjectAnimated
+    point_set::PointSet, 
+    game_object::{GameObjectArea, GameObjectAnimated}
 };
 
 pub struct Tank {

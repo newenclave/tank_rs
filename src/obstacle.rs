@@ -5,7 +5,8 @@ use crate::{
     drawable::Drawable,
     game_object::game_object::GameObject,
     position::{AsPoint, IndexType, Point},
-    sprite::Sprite, game_object_area::GameObjectArea, game_object_impls::GameObjectStatic,
+    sprite::Sprite, 
+    game_object::{GameObjectStatic, GameObjectArea},
 };
 
 pub struct Obstacle {

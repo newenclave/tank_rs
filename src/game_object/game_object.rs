@@ -1,5 +1,5 @@
 use crate::{position::{AsPoint, IndexType, Point}};
-use crate::game_object_area::GameObjectArea;
+use crate::game_object::GameObjectArea;
 
 use std::{
     cmp::{max, min},

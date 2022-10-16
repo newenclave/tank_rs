@@ -14,5 +14,3 @@ pub mod sprite;
 pub mod tank;
 pub mod terminal;
 pub mod timer;
-
-use crate::game_object::*;

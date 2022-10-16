@@ -7,9 +7,7 @@ use crate::{
     position::{AsPoint, IndexType, Point},
     sprite::Sprite,
     timer::Timer, direction::Direction, 
-    game_object_area::GameObjectArea, 
-    game_object_impls::GameObjectAnimated, 
-    game_object::game_object::GameObject,
+    game_object::{GameObjectArea, GameObjectAnimated, GameObject},
 };
 
 const BULLET_SPRITE: &'static str = r#"
