@@ -12,11 +12,11 @@ use crate::{
 pub trait GameObjectArea {
     fn get_point_set(&self) -> Option<&HashSet<Point>>;
     fn get_pos(&self) -> Point;
-    fn get_width(&self) -> crate::position::IndexType;
-    fn get_height(&self) -> crate::position::IndexType;
     fn get_center_pos(&self) -> Point;
     fn move_to(&mut self, x: IndexType, y: IndexType);
     fn move_center_to(&mut self, x: IndexType, y: IndexType);
+    fn get_width(&self) -> crate::position::IndexType;
+    fn get_height(&self) -> crate::position::IndexType;
     fn draw_to_canvas(&self, canvas: &mut dyn Canvas);
 }
 
@@ -78,5 +78,4 @@ where
             }
         }
     }
-
 }
