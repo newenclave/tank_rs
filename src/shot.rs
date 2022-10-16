@@ -48,9 +48,9 @@ const BULLET_EXPLODE: &'static str = r#"
 |  X   X
 |    X
 -
-   + X X
-   |X X X
-   | X X
+  + X X
+  |X X X
+  | X X
 "#;
 
 pub struct Shot {
