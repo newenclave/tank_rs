@@ -104,7 +104,7 @@ pub trait GameObject {
         )
     }
 
-    fn get_overlap(&self, other: &dyn GameObject) -> Vec<(Point, Point)> {
+    fn get_overlap(&self, other: &impl GameObject) -> Vec<(Point, Point)> {
         if let Some(my_set) = self.get_point_set() {
             if let Some(other_set) = other.get_point_set() {
                 let my_rect = self.get_rect();
